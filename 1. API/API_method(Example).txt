@@ -1,0 +1,29 @@
+@PostMapping("/getRoomInfo")
+	public OutputForm getRoomInfo(@RequestBody InputForm inputForm){
+		log.info("room/manager/getRoomInfo - start");
+		log.debug(inputForm.toString());
+		
+		OutputForm result = new OutputForm();
+		MRoom mRoom = mappingModel(inputForm.getData(), MRoom.class);
+		
+		try {
+			RoomException.tokenCheck(inputForm);
+			RoomException.intEmptyCheck(RoomConstans.ROOM_SEQ_STR, mRoom.getRoomSeq());
+			
+			MRoom getRoom = roomManagerService.getRoomInfo(mRoom.getRoomSeq());
+			
+			if(getRoom == null) {
+				throw new Exception("?ì¡ãøõÚÊ¥«¨«é?");
+			}else {
+				result.setData(getRoom);
+			}
+		}catch(Exception e) {
+			result.setStatus(CommonConstants.STATUS_ERROR);
+			result.setMessage(e.getMessage());
+		}
+		
+		log.debug(result.toString());
+		log.info("room/manager/getRoomInfom - end");
+		
+		return result;
+	}
